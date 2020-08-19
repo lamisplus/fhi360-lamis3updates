@@ -1,0 +1,6 @@
+<div class="adf-property-label">{{ property.label | translate }}</div>
+<div class="adf-property-value">
+    <div [attr.data-automation-id]="'card-textitem-value-' + property.key">
+        <p [textContent]="property.displayValue" style="white-space: pre-line;"></p>
+    </div>
+</div>

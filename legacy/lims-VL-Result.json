@@ -1,0 +1,19 @@
+{
+  "manifestID": "HU0930993",
+  "viralLoadTestReport": [
+    {
+      "laboratoryRegistrationNumber": "",
+      "receivingPCRLab": "",
+      "pcrLabSampleNumber": "",
+      "visitDate": "",
+      "dateSampleRecievedAtPCRLab": "",
+      "testResult": "",
+      "resultDate": "",
+      "assayDate": "",
+      "approvalDate": "",
+      "dateResultDispatched": "",
+      "sampleStatus": "",
+      "sampleTestable": true
+    }
+  ]
+}

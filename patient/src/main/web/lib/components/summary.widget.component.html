@@ -1,0 +1,11 @@
+<ng-container *ngIf="summaries">
+    <mat-card *ngFor="let summary of summaries" class="default mb-1 pb-0">
+        <ng-container *ngIf="!!summary.header">
+            <mat-card-title>{{summary.header}}</mat-card-title>
+            <mat-divider></mat-divider>
+        </ng-container>
+        <mat-card-content>
+            <adf-card-view [properties]="propertiesForSummary(summary)"></adf-card-view>
+        </mat-card-content>
+    </mat-card>
+</ng-container>

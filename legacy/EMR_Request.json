@@ -1,0 +1,26 @@
+{
+  "$id": "patient.schema.json",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "EMR_Request_Result",
+  "type": "object",
+  "description": "The schema handles EMR request result",
+  "properties": {
+    "Facility_ID": {
+      "type": "string",
+      "description": "Facility number.",
+      "minimum": 15,
+      "maximum": 15
+    },
+    "test_type": {
+      "type": "string",
+      "description": "Test type.",
+      "minimum": 2,
+      "maximum": 20
+    },
+    "Manifest_ID": {
+      "description": "Manifest ID.",
+      "type": "integer",
+      "minimum": 0
+    }
+  }
+}

@@ -1,0 +1,65 @@
+<div class="lamis-edit-form">
+    <div class="lamis-edit-form-container">
+        <form name="form" role="form" novalidate (ngSubmit)="save()" #biometricForm="ngForm">
+            <mat-card class="default">
+                <mat-card-header>
+                </mat-card-header>
+                <mat-card-content>
+                    <div>
+                        <p class="mat-warn">{{message}}</p>
+                    </div>
+                    <div>
+                        <mat-form-field>
+                            <mat-label>Fingerprint Scanner</mat-label>
+                            <mat-select [(value)]="reader">
+                                <mat-option></mat-option>
+                                <mat-option *ngFor="let r of readers" [value]="r">{{r.name}}</mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <mat-form-field class="full-width">
+                                <mat-label>Finger</mat-label>
+                                <mat-select [(value)]="finger">
+                                    <mat-option></mat-option>
+                                    <mat-option *ngFor="let r of fingers" [value]="r">{{r.toString()}}</mat-option>
+                                </mat-select>
+                            </mat-form-field>
+                        </div>
+                        <div class="col-md-4">
+                            <button mat-raised-button type="button"
+                                    [disabled]="!reader || !finger"
+                                    (click)="enroll()">Enroll Finger
+                            </button>
+                        </div>
+                    </div>
+                    <mat-divider></mat-divider>
+                    <mat-card>
+                        <mat-card-header class="mat-bg-accent">
+                            <mat-card-title>
+                                Enrolled Fingers
+                            </mat-card-title>
+                        </mat-card-header>
+                        <mat-divider></mat-divider>
+                        <mat-card-content>
+                            <mat-list dense>
+                                <mat-list-item
+                                        *ngFor="let b of biometrics">{{fingerToString(b.templateType)}}</mat-list-item>
+                            </mat-list>
+                        </mat-card-content>
+                    </mat-card>
+                    <mat-divider></mat-divider>
+                </mat-card-content>
+                <mat-card-actions class="lamis-edit-form-actions">
+                    <button mat-raised-button type="button" (click)="previousState()">Back</button>
+                    <button mat-raised-button color='primary'
+                            [disabled]="!biometrics.length || isSaving"
+                            type="submit">
+                        Save Enrollment
+                    </button>
+                </mat-card-actions>
+            </mat-card>
+        </form>
+    </div>
+</div>

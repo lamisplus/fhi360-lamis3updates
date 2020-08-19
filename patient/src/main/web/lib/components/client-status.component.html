@@ -1,0 +1,187 @@
+<script src="patient-details.component.ts"></script>
+<div class="lamis-edit-form">
+    <div class="lamis-edit-form-container">
+        <form name="form" role="form" novalidate (ngSubmit)="save()" #statusForm="ngForm">
+            <mat-card class="default">
+                <mat-card-content *ngIf="patient">
+                    <div>
+                        <mat-form-field class="full-width" *ngIf="entity">
+                            <input matInput [matDatepicker]="picker"
+                                   placeholder="{{entity.id ? 'Date of Status' : 'Date of New Status'}}"
+                                   [(ngModel)]="entity.dateStatus"
+                                   [matDatepickerFilter]="filterDates.bind(this)"
+                                   #visit="ngModel"
+                                   [max]="today"
+                                   [min]="patient.dateRegistration"
+                                   name="visit"
+                                   required>
+                            <mat-datepicker-toggle
+                                    matSuffix
+                                    [for]="picker">
+                            </mat-datepicker-toggle>
+                            <mat-datepicker #picker></mat-datepicker>
+                            <mat-error
+                                    *ngIf="visit.errors && (visit.dirty || visit.touched) && (visit.errors.required)">
+                                Date of new status is required
+                            </mat-error>
+                            <mat-error
+                                    *ngIf="visit.errors && (visit.dirty || visit.touched) && (visit.errors.min)">
+                                Date of new status cannot be before {{entity.patient.dateRegistration}}
+                            </mat-error>
+                            <mat-error
+                                    *ngIf="visit.errors && (visit.dirty || visit.touched) && (visit.errors.max)">
+                                Date of new status cannot be in the future
+                            </mat-error>
+                        </mat-form-field>
+                    </div>
+                    <div>
+                        <mat-form-field class="full-width">
+                            <mat-select [(ngModel)]="entity.status"
+                                        placeholder="{{entity.id ? 'Status' : 'New Status'}}"
+                                        #outcome="ngModel" required name="outcome">
+                                <mat-option></mat-option>
+                                <mat-option [value]="'ART_TRANSFER_OUT'">ART Transfer Out</mat-option>
+                                <mat-option [value]="'PRE_ART_TRANSFER_OUT'">Pre-ART Transfer Out</mat-option>
+                                <mat-option [value]="'STOPPED_TREATMENT'">Stopped Treatment</mat-option>
+                                <mat-option [value]="'KNOWN_DEATH'">Died (Confirmed)</mat-option>
+                                <mat-option [value]="'PREVIOUSLY_UNDOCUMENTED_TRANSFER_CONFIRMED'">Previously
+                                    Undocumented Patient Transfer (Confirmed)
+                                </mat-option>
+                                <mat-option [value]="'TRACED_UNABLE_TO_LOCATE'">Traced Patient (Unable to locate)
+                                </mat-option>
+                                <mat-option [value]="'TRACED_AGREED_TO_RETURN_TO_CARE'">Traced Patient and agreed to
+                                    return to care
+                                </mat-option>
+                                <mat-option [value]="'DID_NOT_ATTEMPT_TO_TRACE'">Did Not Attempt to Trace Patient
+                                </mat-option>
+                            </mat-select>
+                            <mat-error
+                                    *ngIf="outcome.errors && (outcome.dirty || outcome.touched) && (outcome.errors.required)">
+                                New Status is required
+                            </mat-error>
+                        </mat-form-field>
+                    </div>
+                    <div class="row" *ngIf="entity.outcome && entity.outcome.indexOf('TRACE') !== -1">
+                        <div class="col-md-6">
+                            <mat-form-field class="full-width">
+                                <input matInput [matDatepicker]="picker1"
+                                       placeholder="Date of Tracked"
+                                       [(ngModel)]="entity.dateTracked"
+                                       #tracked="ngModel"
+                                       [min]="entity.patient.dateRegistration"
+                                       [max]="entity.dateStatus"
+                                       name="tracked"
+                                       required>
+                                <mat-datepicker-toggle
+                                        matSuffix
+                                        [for]="picker1">
+                                </mat-datepicker-toggle>
+                                <mat-datepicker #picker1></mat-datepicker>
+                                <mat-error
+                                        *ngIf="tracked.errors && (tracked.dirty || tracked.touched) && (tracked.errors.required)">
+                                    Date tracked is required
+                                </mat-error>
+                            </mat-form-field>
+                        </div>
+                        <div class="col-md-6" *ngIf="entity.outcome === 'TRACED_AGREED_TO_RETURN_TO_CARE'">
+                            <mat-form-field class="full-width">
+                                <input matInput [matDatepicker]="picker2"
+                                       placeholder="Date Agreed to Return"
+                                       [(ngModel)]="entity.agreedDate"
+                                       #agreed="ngModel"
+                                       [min]="entity.dateStatus"
+                                       name="agreed"
+                                       required>
+                                <mat-datepicker-toggle
+                                        matSuffix
+                                        [for]="picker2">
+                                </mat-datepicker-toggle>
+                                <mat-datepicker #picker2></mat-datepicker>
+                                <mat-error
+                                        *ngIf="agreed.errors && (agreed.dirty || agreed.touched) && (agreed.errors.required)">
+                                    Date of agreed to return is required
+                                </mat-error>
+                            </mat-form-field>
+                        </div>
+                    </div>
+                    <div *ngIf="entity.status === 'ART_TRANSFER_OUT'">
+                        <mat-form-field class="full-width">
+                            <input matInput type="text" placeholder="Facility Transferred To"
+                                   required name="fac" #fac="ngModel"
+                                   [(ngModel)]="facilityTransferredTo"
+                                   (input)="change($event.target.value)"
+                                   [matAutocomplete]="auto">
+                            <mat-autocomplete #auto="matAutocomplete">
+                                <mat-option *ngFor="let facility of facilities" [value]="facility">{{facility}}</mat-option>
+                            </mat-autocomplete>
+                            <mat-error
+                                    *ngIf="fac.errors && (fac.dirty || fac.touched) && (fac.errors.required)">
+                                Facility transferred to is required
+                            </mat-error>
+                        </mat-form-field>
+                    </div>
+                    <div *ngIf="entity.outcome === 'KNOWN_DEATH'">
+                        <mat-form-field class="full-width">
+                            <mat-select [(ngModel)]="entity.causeOfDeath"
+                                        placeholder="Cause of Death"
+                                        #death="ngModel" required name="death">
+                                <mat-option></mat-option>
+                                <mat-option [value]="'HIV disease resulting in TB'">HIV disease resulting in TB
+                                </mat-option>
+                                <mat-option [value]="'HIV disease resulting in cancer'">HIV disease resulting in
+                                    cancer
+                                </mat-option>
+                                <mat-option [value]="'HIV disease resulting in other infectious and parasitic disease'">
+                                    HIV disease resulting in other infectious and parasitic disease
+                                </mat-option>
+                                <mat-option
+                                        [value]="'Other HIV disease resulting in other disease or conditions leading to death'">
+                                    Other HIV disease resulting in other disease or conditions leading to death
+                                </mat-option>
+                                <mat-option [value]="'Other natural causes'">Other natural causes</mat-option>
+                                <mat-option [value]="'Non-natural causes'">Non-natural causes</mat-option>
+                                <mat-option [value]="'Unknown cause'">Unknown cause</mat-option>
+                            </mat-select>
+                            <mat-error
+                                    *ngIf="death.errors && (death.dirty || death.touched) && (death.errors.required)">
+                                Cause of death is required
+                            </mat-error>
+                        </mat-form-field>
+                    </div>
+                    <div *ngIf="entity.outcome === 'STOPPED_TREATMENT'">
+                        <mat-form-field class="full-width">
+                            <mat-select [(ngModel)]="entity.reasonForInterruption"
+                                        placeholder="Reason for Interruption"
+                                        #interrupt="ngModel" required name="interrupt">
+                                <mat-option></mat-option>
+                                <mat-option [value]="'Toxicity/side effect'">Toxicity /side effect</mat-option>
+                                <mat-option [value]="'Pregnancy'">Pregnancy</mat-option>
+                                <mat-option [value]="'Treatment failure'">Treatment failure</mat-option>
+                                <mat-option [value]="'Poor adherence'">Poor adherence</mat-option>
+                                <mat-option [value]="'Illness, hospitalization'">Illness, hospitalization</mat-option>
+                                <mat-option [value]="'Drug out of stock'">Drug out of stock</mat-option>
+                                <mat-option [value]="'Patient lacks finances'">Patient lacks finances</mat-option>
+                                <mat-option [value]="'Other patient decision'">Other patient decision</mat-option>
+                                <mat-option [value]="'Planned Rx interruption'">Planned Rx interruption</mat-option>
+                                <mat-option [value]="'Other'">Other</mat-option>
+                            </mat-select>
+                            <mat-error
+                                    *ngIf="interrupt.errors && (interrupt.dirty || interrupt.touched) && (interrupt.errors.required)">
+                                Reason for interruption is required
+                            </mat-error>
+                        </mat-form-field>
+                    </div>
+                    <mat-divider></mat-divider>
+                </mat-card-content>
+                <mat-card-actions class="lamis-edit-form-actions">
+                    <button mat-raised-button type="button" (click)="previousState()">Back</button>
+                    <button mat-raised-button color='primary'
+                            [disabled]="statusForm.invalid"
+                            type="submit">
+                        {{entity.id !== undefined ? 'Update' : 'Save'}}
+                    </button>
+                </mat-card-actions>
+            </mat-card>
+        </form>
+    </div>
+</div>

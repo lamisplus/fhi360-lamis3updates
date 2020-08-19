@@ -1,0 +1,20 @@
+<mat-card>
+    <mat-card-content>
+        <adf-card-view [properties]="properties" [editable]="false"></adf-card-view>
+        <adf-card-view [properties]="statusProperties" [editable]="false"></adf-card-view>
+
+        <mat-form-field class="full-width">
+            <mat-label>Synced Tables</mat-label>
+            <textarea matInput></textarea>
+        </mat-form-field>
+
+        <mat-divider></mat-divider>
+        <button mat-raised-button type="button" (click)="previousState()">Back</button>
+        <button mat-raised-button color='primary'
+                (click)="sync()"
+                [disabled]="!syncing"
+                type="submit">
+            Upload to Server
+        </button>
+    </mat-card-content>
+</mat-card>

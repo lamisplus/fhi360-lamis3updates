@@ -1,0 +1,118 @@
+<div class="lamis-edit-form">
+    <div class="lamis-edit-form-container">
+        <form name="form" role="form" novalidate (ngSubmit)="save()" #screeningForm="ngForm">
+            <mat-card class="default">
+                <mat-card-content>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <mat-form-field class="full-width">
+                                <mat-label>Name</mat-label>
+                                <input matInput name="name" #name="ngModel"
+                                       required
+                                       [(ngModel)]="entity.name"/>
+                                <mat-error
+                                        *ngIf="name.errors && (name.dirty || name.touched) && (name.errors.required)">
+                                    Case Manager name is required
+                                </mat-error>
+                            </mat-form-field>
+                        </div>
+                        <div class="col-md-6">
+                            <mat-form-field class="full-width">
+                                <mat-label>Address</mat-label>
+                                <textarea matInput name="address" [(ngModel)]="entity.address" #address="ngModel"
+                                          rows="2" required>
+                                </textarea>
+                                <mat-error
+                                        *ngIf="address.errors && (address.dirty || address.touched) && (address.errors.required)">
+                                    Case Manager address is required
+                                </mat-error>
+                            </mat-form-field>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <mat-form-field class="full-width">
+                                <mat-label>Screening Type</mat-label>
+                                <mat-select name="type" [(ngModel)]="entity.screeningType" #type="ngModel" required>
+                                    <mat-option></mat-option>
+                                    <mat-option [value]="'FIRST_TIME'">First Time</mat-option>
+                                    <mat-option [value]="'FOLLOWUP'">Followup after previous negative result or suspected cancer</mat-option>
+                                    <mat-option [value]="'POST_TREATMENT_FOLLOWUP'">Post-treatment Followup</mat-option>
+                                </mat-select>
+                                <mat-error
+                                        *ngIf="type.errors && (type.dirty || type.touched) && (type.errors.required)">
+                                    Screening type is required
+                                </mat-error>
+                            </mat-form-field>
+                        </div>
+                        <div class="col-md-6">
+                            <mat-form-field class="full-width">
+                                <mat-label>Screening Method</mat-label>
+                                <mat-select name="method" [(ngModel)]="entity.screeningMethod" #method="ngModel" required>
+                                    <mat-option></mat-option>
+                                    <mat-option [value]="'VIA'">Visual Inspection with Acetric Acid (VIA)</mat-option>
+                                    <mat-option [value]="'VILI'">Visual Inspection with Lugos Iodine (VILI)</mat-option>
+                                    <mat-option [value]="'PAP_SMEAR'">PAP Smear</mat-option>
+                                </mat-select>
+                                <mat-error
+                                        *ngIf="method.errors && (method.dirty || method.touched) && (method.errors.required)">
+                                    Screening method is required
+                                </mat-error>
+                            </mat-form-field>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <mat-form-field class="full-width">
+                                <mat-label>Result of Screening</mat-label>
+                                <mat-select name="result" [(ngModel)]="entity.screeningResult" #result="ngModel" required>
+                                    <mat-option></mat-option>
+                                    <mat-option [value]="'NEGATIVE'">Negative</mat-option>
+                                    <mat-option [value]="'POSITIVE'">Positive</mat-option>
+                                    <mat-option [value]="'SUSPICIOUS'">Suspicious Cancerous Lesions</mat-option>
+                                </mat-select>
+                                <mat-error
+                                        *ngIf="result.errors && (result.dirty || result.touched) && (result.errors.required)">
+                                    Result of Screening is required
+                                </mat-error>
+                            </mat-form-field>
+                        </div>
+                        <div class="col-md-6" *ngIf="entity.screeningResult === 'POSITIVE'">
+                            <mat-checkbox [(ngModel)]="entity.referredForTreatment"
+                                          name="uibn"
+                            >
+                                Referred for Treatment?
+                            </mat-checkbox>
+                        </div>
+                    </div>
+                    <div class="row" *ngIf="entity.referredForTreatment">
+                        <div class="col-md-12">
+                            <mat-form-field class="full-width">
+                                <mat-label>Precancerous Lesions Treatment Method</mat-label>
+                                <mat-select name="pc" [(ngModel)]="entity.precancerousLesionsTreatmentMethod" #pc="ngModel" required>
+                                    <mat-option></mat-option>
+                                    <mat-option [value]="'CRYOTHERAPY'">Cryotherapy</mat-option>
+                                    <mat-option [value]="'THERMAL_ABLATION'">Thermal Ablation/ Thermocoagulation</mat-option>
+                                    <mat-option [value]="'LEETZ_LEEP'">LEETZ/ LEEP</mat-option>
+                                    <mat-option [value]="'CONIZATION'">Conization Knifer/ Lagor</mat-option>
+                                </mat-select>
+                                <mat-error
+                                        *ngIf="pc.errors && (pc.dirty || pc.touched) && (pc.errors.required)">
+                                    Treatment method is required
+                                </mat-error>
+                            </mat-form-field>
+                        </div>
+                    </div>
+                </mat-card-content>
+                <mat-card-actions class="lamis-edit-form-actions">
+                    <button mat-raised-button type="button" (click)="previousState()">Back</button>
+                    <button mat-raised-button color='primary'
+                            [disabled]="screeningForm.invalid || isSaving"
+                            type="submit">
+                        {{entity.id !== undefined ? 'Update' : 'Save'}}
+                    </button>
+                </mat-card-actions>
+            </mat-card>
+        </form>
+    </div>
+</div>

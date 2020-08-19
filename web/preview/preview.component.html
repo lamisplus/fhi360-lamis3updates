@@ -1,0 +1,21 @@
+<div class="container" *ngIf="urlFile || content">
+    <adf-viewer
+        [blobFile]="content"
+        [showRightSidebar]="true"
+        [showLeftSidebar]="true"
+        [allowGoBack]="false"
+        [displayName]="displayName"
+        [showToolbar]="true"
+        [allowPrint]="true"
+        [allowDownload]="true"
+        [allowRightSidebar]="true"
+        [allowLeftSidebar]="true"
+        [urlFile]="urlFile"
+        (print)="print($event)">
+        <adf-viewer-extension [supportedExtensions]="['xls','xlsx']" #extension>
+            <ng-template let-urlFileContent="urlFileContent" let-extension="extension">
+                <lamis-excel [excelFile]="urlFileContent"></lamis-excel>
+            </ng-template>
+        </adf-viewer-extension>
+    </adf-viewer>
+</div>

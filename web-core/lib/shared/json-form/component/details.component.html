@@ -1,0 +1,11 @@
+<ng-container *ngIf="model && details">
+    <mat-card *ngFor="let detail of details" class="default mb-1 pb-0">
+        <ng-container *ngIf="!!detail.header">
+            <mat-card-title>{{detail.header}}</mat-card-title>
+            <mat-divider></mat-divider>
+        </ng-container>
+        <mat-card-content>
+            <adf-card-view [properties]="propertiesForDetail(detail)"></adf-card-view>
+        </mat-card-content>
+    </mat-card>
+</ng-container>

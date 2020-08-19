@@ -1,0 +1,26 @@
+<div class="lamis-edit-form">
+    <div class="lamis-edit-form-container">
+        <mat-card>
+            <mat-card-header>
+            </mat-card-header>
+            <mat-card-content>
+                <adf-card-view [properties]="properties" editable="false"></adf-card-view>
+                <mat-divider></mat-divider>
+                <adf-datatable *ngIf="dataSource"
+                               [rows]="dataSource">
+                    <data-columns>
+                        <data-column key="labTest.description" title="Description" sortable="true"></data-column>
+                        <data-column key="result" title="Result" sortable="false"></data-column>
+                        <data-column key="labTest.measure" title="Unit" sortable="false"></data-column>
+                        <data-column key="comment" title="Comment" sortable="false"></data-column>
+                    </data-columns>
+                </adf-datatable>
+            </mat-card-content>
+            <mat-card-actions class="lamis-edit-form-actions">
+                <button mat-button (click)="previousState()">Back</button>
+                <button mat-raised-button color="warn" (click)="delete()">Delete</button>
+                <button mat-raised-button color="primary" (click)="edit()">Edit</button>
+            </mat-card-actions>
+        </mat-card>
+    </div>
+</div>

@@ -1,0 +1,41 @@
+<a class="mb-1 pb-1" [routerLink]="['/', 'patients', patientUuid, 'timeline']" *ngIf="!detailed">Detailed History</a>
+<mat-divider></mat-divider>
+<timeline>
+    <timeline-event *ngFor="let period of timeLine" side="right">
+        <timeline-badge>
+            <mat-icon>insert_invitation</mat-icon>
+        </timeline-badge>
+        <timeline-panel>
+            <timeline-header>
+                <h4>{{period.date}}</h4>
+            </timeline-header>
+            <mat-list>
+                <mat-list-item>
+                    <div matLine>
+                        <ng-container *ngFor="let event of period.activities">
+                            <div matLine>
+                                <button mat-icon-button aria-label="Delete event"
+                                        *ngIf="event.deletable"
+                                        (click)="delete(event.path, event.uuid)">
+                                    <mat-icon>delete</mat-icon>
+                                </button>
+                                <button mat-icon-button aria-label="View event"
+                                        *ngIf="event.viewable"
+                                        (click)="view(event.path, event.uuid)">
+                                    <mat-icon>remove_red_eye</mat-icon>
+                                </button>
+                                <button mat-icon-button aria-label="Edit event"
+                                        *ngIf="event.editable"
+                                        (click)="edit(event.path, event.uuid)">
+                                    <mat-icon>edit</mat-icon>
+                                </button>
+                            </div>
+                            <a mat-line matTooltip="{{event.name}}">{{event.name}}</a>
+                            <mat-divider></mat-divider>
+                        </ng-container>
+                    </div>
+                </mat-list-item>
+            </mat-list>
+        </timeline-panel>
+    </timeline-event>
+</timeline>

@@ -1,0 +1,542 @@
+<div class="lamis-edit-form">
+    <div class="lamis-edit-form-container">
+        <form name="form" [formGroup]="formGroup" role="form" novalidate (ngSubmit)="save()">
+            <mat-card class="default">
+                <mat-card-content>
+                    <mat-divider></mat-divider>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <mat-form-field class="full-width">
+                                <mat-label>Hospital Number</mat-label>
+                                <input matInput [(ngModel)]="entity.hospitalNum" #hospitalNum="ngModel"
+                                       required
+                                       [disabled]="!!entity.id"
+                                       name="hospitalNum"/>
+                                <mat-error
+                                        *ngIf="hospitalNum.errors && (hospitalNum.dirty || hospitalNum.touched) && (hospitalNum.errors.required)">
+                                    Hospital Number is required
+                                </mat-error>
+                                <mat-error
+                                        *ngIf="hospitalNum.errors && (hospitalNum.dirty || hospitalNum.touched) && (hospitalNum.errors.numberExists)">
+                                    Hospital Number is used by another patient
+                                </mat-error>
+                                <mat-error
+                                        *ngIf="hospitalNum.errors && (hospitalNum.dirty || hospitalNum.touched)">
+                                    {{hospitalNum.pending}}
+                                </mat-error>
+                            </mat-form-field>
+                        </div>
+                        <div class="col-md-6">
+                            <mat-form-field class="full-width">
+                                <mat-label>Unique ID</mat-label>
+                                <input matInput [(ngModel)]="entity.uniqueId" name="uniqueId"/>
+                            </mat-form-field>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6" *ngIf="!!minDateRegistration">
+                            <mat-form-field class="full-width">
+                                <input matInput [matDatepicker]="picker"
+                                       placeholder="Date of Registration/Transfer-In"
+                                       [(ngModel)]="entity.dateRegistration"
+                                       #registration="ngModel"
+                                       [max]="today"
+                                       [min]="minDateRegistration"
+                                       (dateChange)="dateRegistrationChanged($event.value)"
+                                       name="registration"
+                                       required>
+                                <mat-datepicker-toggle
+                                        matSuffix
+                                        [for]="picker">
+                                </mat-datepicker-toggle>
+                                <mat-datepicker #picker></mat-datepicker>
+                                <mat-error
+                                        *ngIf="registration.errors && (registration.dirty || registration.touched) && (registration.errors.required)">
+                                    Date of Registration is required
+                                </mat-error>
+                            </mat-form-field>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <mat-form-field class="full-width">
+                                <mat-label>Surname</mat-label>
+                                <input matInput [(ngModel)]="entity.surname" #sn="ngModel"
+                                       required
+                                       [minLength]="2"
+                                       name="sn"/>
+                                <mat-error
+                                        *ngIf="sn.errors && (sn.dirty || sn.touched) && (sn.errors.required)">
+                                    Surname is required
+                                </mat-error>
+                                <mat-error
+                                        *ngIf="sn.errors && (sn.dirty || sn.touched) && (sn.errors.minLength)">
+                                    Minimum length for Surname is 2 characters
+                                </mat-error>
+                            </mat-form-field>
+                        </div>
+                        <div class="col-md-6">
+                            <mat-form-field class="full-width">
+                                <mat-label>Other Names</mat-label>
+                                <input matInput [(ngModel)]="entity.otherNames" #on="ngModel"
+                                       required
+                                       [minLength]="5"
+                                       name="on"/>
+                                <mat-error
+                                        *ngIf="on.errors && (on.dirty || on.touched) && (on.errors.required)">
+                                    Other Names required
+                                </mat-error>
+                                <mat-error
+                                        *ngIf="on.errors && (on.dirty || on.touched) && (on.errors.minLength)">
+                                    Minimum length for Other Names is 5 characters
+                                </mat-error>
+                            </mat-form-field>
+                        </div>
+                    </div>
+                    <div *ngIf="!entity.id">
+                        <fieldset>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <mat-checkbox [(ngModel)]="entity.dobEstimated" name="est">Age Estimated?
+                                    </mat-checkbox>
+                                </div>
+                                <div class="col-md-6">
+                                    <div *ngIf="entity.dobEstimated" class="row">
+                                        <div class="col-md-6">
+                                            <mat-form-field class="full-width">
+                                                <mat-label>Age at Registration</mat-label>
+                                                <input matInput [(ngModel)]="age" required
+                                                       [min]="2"
+                                                       [max]="70"
+                                                       (change)="estimateDob()"
+                                                       name="age" #age1="ngModel">
+                                                <mat-error
+                                                        *ngIf="age1.errors && (age1.dirty || age1.touched) && (age1.errors.min)">
+                                                    Minimum age is 2
+                                                </mat-error>
+                                                <mat-error
+                                                        *ngIf="age1.errors && (age1.dirty || age1.touched) && (age1.errors.max)">
+                                                    Maximum age is 70
+                                                </mat-error>
+                                                <mat-error
+                                                        *ngIf="age1.errors && (age1.dirty || age1.touched) && (age1.errors.required)">
+                                                    Estimated age is required
+                                                </mat-error>
+                                            </mat-form-field>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <mat-form-field class="full-width">
+                                                <mat-label>Age Units</mat-label>
+                                                <mat-select [(ngModel)]="ageUnits"
+                                                            (selectionChange)="estimateDob()"
+                                                            required name="units" #units="ngModel">
+                                                    <mat-option></mat-option>
+                                                    <mat-option [value]="'years'">Year(s)</mat-option>
+                                                    <mat-option [value]="'months'">Month(s)</mat-option>
+                                                </mat-select>
+                                                <mat-error
+                                                        *ngIf="units.errors && (units.dirty || units.touched) && (units.errors.required)">
+                                                    Age units is required
+                                                </mat-error>
+                                            </mat-form-field>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <mat-form-field class="full-width" *ngIf="!entity.dobEstimated">
+                                            <input matInput [matDatepicker]="picker1"
+                                                   placeholder="Date of Birth"
+                                                   [(ngModel)]="entity.dateBirth"
+                                                   [min]="minDob"
+                                                   (dateChange)="dateBirthChanged($event.value)"
+                                                   required
+                                                   [max]="today"
+                                                   #dob1="ngModel"
+                                                   name="dob">
+                                            <mat-datepicker-toggle
+                                                    matSuffix
+                                                    [for]="picker1">
+                                            </mat-datepicker-toggle>
+                                            <mat-datepicker #picker1></mat-datepicker>
+                                            <mat-error
+                                                    *ngIf="dob1.errors && (dob1.dirty || dob1.touched) && (dob1.errors.required)">
+                                                Date of Birth is required
+                                            </mat-error>
+                                        </mat-form-field>
+                                    </div>
+                                </div>
+                            </div>
+                        </fieldset>
+                    </div>
+                    <div *ngIf="entity.id">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <mat-form-field class="full-width" *ngIf="minDob">
+                                    <input matInput [matDatepicker]="picker2"
+                                           placeholder="Date of Birth"
+                                           [(ngModel)]="entity.dateBirth"
+                                           #birth="ngModel"
+                                           (dateChange)="dateBirthChanged($event.value)"
+                                           [max]="entity.dateRegistration"
+                                           [min]="minDob"
+                                           name="dob"
+                                           required>
+                                    <mat-datepicker-toggle
+                                            matSuffix
+                                            [for]="picker2">
+                                    </mat-datepicker-toggle>
+                                    <mat-datepicker #picker2></mat-datepicker>
+                                    <mat-error
+                                            *ngIf="birth.errors && (birth.dirty || birth.touched) && (birth.errors.required)">
+                                        Date of Birth is required
+                                    </mat-error>
+                                    <mat-error
+                                            *ngIf="birth.errors && (birth.dirty || birth.touched) && (birth.errors.max)">
+                                        Date of Birth cannot be after Date of Registration
+                                    </mat-error>
+                                </mat-form-field>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <mat-form-field class="full-width">
+                                <mat-label>Gender</mat-label>
+                                <mat-select [(ngModel)]="entity.gender"
+                                            required name="gender" #gender="ngModel">
+                                    <mat-option></mat-option>
+                                    <mat-option [value]="'Female'">Female</mat-option>
+                                    <mat-option [value]="'Male'">Male</mat-option>
+                                </mat-select>
+                                <mat-error
+                                        *ngIf="gender.errors && (gender.dirty || gender.touched) && (gender.errors.required)">
+                                    Gender is required
+                                </mat-error>
+                            </mat-form-field>
+                        </div>
+                        <div class="col-md-6">
+                            <mat-form-field class="full-width">
+                                <mat-label>Marital Status</mat-label>
+                                <mat-select [(ngModel)]="entity.maritalStatus"
+                                            required name="status" #status="ngModel">
+                                    <mat-option></mat-option>
+                                    <mat-option [value]="'Single'">Single</mat-option>
+                                    <mat-option [value]="'Married'">Married</mat-option>
+                                    <mat-option [value]="'Widowed'">Widowed</mat-option>
+                                    <mat-option [value]="'Separated'">Separated</mat-option>
+                                    <mat-option [value]="'Divorced'">Divorced</mat-option>
+                                </mat-select>
+                                <mat-error
+                                        *ngIf="status.errors && (status.dirty || status.touched) && (status.errors.required)">
+                                    Marital Status is required
+                                </mat-error>
+                            </mat-form-field>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <mat-form-field class="full-width">
+                                <mat-label>Job /Occupation Status</mat-label>
+                                <mat-select name="occupation" [(ngModel)]="entity.occupation">
+                                    <mat-option></mat-option>
+                                    <mat-option [value]="'Unemployed'">Unemployed</mat-option>
+                                    <mat-option [value]="'Employed'">Employed</mat-option>
+                                    <mat-option [value]="'Student'">Student</mat-option>
+                                    <mat-option [value]="'Retired'">Retired</mat-option>
+                                </mat-select>
+                            </mat-form-field>
+                        </div>
+                        <div class="col-md-6">
+                            <mat-form-field class="full-width">
+                                <mat-label>Educational Level</mat-label>
+                                <mat-select name="education" [(ngModel)]="entity.education">
+                                    <mat-option></mat-option>
+                                    <mat-option [value]="'None'">None</mat-option>
+                                    <mat-option [value]="'Primary'">Primary</mat-option>
+                                    <mat-option [value]="'Senior Secondary'">Senior Secondary</mat-option>
+                                    <mat-option [value]="'Quranic'">Quranic</mat-option>
+                                    <mat-option [value]="'Junior Secondary'">Junior Secondary</mat-option>
+                                    <mat-option [value]="'Post Secondary'">Post Secondary</mat-option>
+                                </mat-select>
+                            </mat-form-field>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <mat-form-field class="full-width">
+                                <mat-label>State of Residence</mat-label>
+                                <mat-select name="state" [(ngModel)]="state"
+                                            [compareWith]="entityCompare"
+                                            (selectionChange)="stateChange($event.value.id)">
+                                    <mat-option></mat-option>
+                                    <mat-option *ngFor="let state of states" [value]="state">{{state.name}}</mat-option>
+                                </mat-select>
+                            </mat-form-field>
+                        </div>
+                        <div class="col-md-6">
+                            <mat-form-field class="full-width">
+                                <mat-label>LGA of Residence</mat-label>
+                                <mat-select name="lga" [(ngModel)]="entity.lga" required #lga="ngModel"
+                                            [compareWith]="entityCompare">
+                                    <mat-option></mat-option>
+                                    <mat-option *ngFor="let lga of lgas" [value]="lga">{{lga.name}}</mat-option>
+                                </mat-select>
+                                <mat-error
+                                        *ngIf="lga.errors && (lga.dirty || lga.touched) && (lga.errors.required)">
+                                    LGA of Residence is required
+                                </mat-error>
+                            </mat-form-field>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <mat-form-field class="full-width">
+                                <mat-label class="form-label">Address</mat-label>
+                                <textarea name="address" matInput [(ngModel)]="entity.address"
+                                          rows="3"
+                                          required #address="ngModel"></textarea>
+                                <mat-error
+                                        *ngIf="address.errors && (address.dirty || address.touched) && (address.errors.required)">
+                                    Address is required
+                                </mat-error>
+                            </mat-form-field>
+                        </div>
+                        <div class="col-md-6">
+                            <mat-form-field class="full-width">
+                                <mat-label>Telephone Number</mat-label>
+                                <input matInput name="phone" type="number" [(ngModel)]="entity.phone"/>
+                            </mat-form-field>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <mat-form-field class="full-width">
+                                <mat-label>Care Entry Point</mat-label>
+                                <mat-select name="entryPoint" [(ngModel)]="entity.entryPoint"
+                                            #entryPoint="ngModel">
+                                    <mat-option></mat-option>
+                                    <mat-option [value]="'OPD'">OPD</mat-option>
+                                    <mat-option [value]="'In-patient'">In-patient</mat-option>
+                                    <mat-option [value]="'HCT'">HCT</mat-option>
+                                    <mat-option [value]="'TB DOTS'">TB DOTS</mat-option>
+                                    <mat-option [value]="'STI Clinic'">STI Clinic</mat-option>
+                                    <mat-option [value]="'PMTCT'">PMTCT</mat-option>
+                                    <mat-option [value]="'Transfer-in'">Transfer-in</mat-option>
+                                    <mat-option [value]="'Outreach'">Outreach</mat-option>
+                                    <mat-option [value]="'CBO'">CBO</mat-option>
+                                    <mat-option [value]="'Others'">Others</mat-option>
+                                </mat-select>
+                                <mat-error
+                                        *ngIf="entryPoint.errors && (entryPoint.dirty || entryPoint.touched) && (entryPoint.errors.required)">
+                                    Care Entry Point is required
+                                </mat-error>
+                            </mat-form-field>
+                        </div>
+                        <div class="col-md-6">
+                            <mat-form-field class="full-width">
+                                <mat-label>Date of Confirmed HIV Test</mat-label>
+                                <input matInput [matDatepicker]="picker2"
+                                       [(ngModel)]="entity.dateConfirmedHiv"
+                                       #time="ngModel"
+                                       [max]="entity.dateRegistration"
+                                       [min]="entity.dateBirth"
+                                       required
+                                       name="time">
+                                <mat-datepicker-toggle
+                                        matSuffix
+                                        [for]="picker2">
+                                </mat-datepicker-toggle>
+                                <mat-datepicker #picker2></mat-datepicker>
+                                <mat-error
+                                        *ngIf="time.errors && (time.dirty || time.touched) && (time.errors.required)">
+                                    Date of Confirmed HIV Test is required
+                                </mat-error>
+                            </mat-form-field>
+                        </div>
+                    </div>
+                    <div class="row" *ngIf="entity.gender === 'Female'">
+                        <div class="col-md-6">
+                            <mat-form-field class="full-width">
+                                <mat-label>Time of HIV Diagnosis</mat-label>
+                                <mat-select name="timeHivDiagnosis" [(ngModel)]="entity.timeHivDiagnosis">
+                                    <mat-option></mat-option>
+                                    <mat-option [value]="'Previous - Non pregnant'">Previous - Non pregnant</mat-option>
+                                    <mat-option [value]="'Previous pregnancy (ANC)'">Previous pregnancy (ANC)
+                                    </mat-option>
+                                    <mat-option [value]="'Previous pregnancy (L&amp;D)'">Previous pregnancy (L&amp;D)
+                                    </mat-option>
+                                    <mat-option [value]="'Previous pregnancy (PP &lt;72hrs)'">Previous pregnancy (PP
+                                        &lt;72hrs)
+                                    </mat-option>
+                                    <mat-option [value]="'ANC'">ANC</mat-option>
+                                    <mat-option [value]="'Labour'">Labour</mat-option>
+                                    <mat-option [value]="'Post Partum &lt;=72hrs'">Post Partum &lt;=72hrs</mat-option>
+                                    <mat-option [value]="'Post Partum &gt;72hrs'">Post Partum &gt;72hrs</mat-option>
+                                </mat-select>
+                            </mat-form-field>
+                        </div>
+                        <div class="col-md-6">
+                            <mat-form-field class="full-width">
+                                <mat-label>Date enrolled into PMTCT</mat-label>
+                                <input matInput [matDatepicker]="picker3"
+                                       [(ngModel)]="entity.dateEnrolledPMTCT"
+                                       #pmtct="ngModel"
+                                       [max]="entity.dateRegistration"
+                                       [min]="entity.dateBirth"
+                                       name="pmtct">
+                                <mat-datepicker-toggle
+                                        matSuffix
+                                        [for]="picker3">
+                                </mat-datepicker-toggle>
+                                <mat-datepicker #picker3></mat-datepicker>
+                            </mat-form-field>
+                        </div>
+                    </div>
+                    <div class="row" *ngIf="entity.gender === 'Female'">
+                        <div class="col-md-6">
+                            <mat-form-field class="full-width">
+                                <mat-label>Pregnancy Status</mat-label>
+                                <mat-select name="pregnancyStatus" [(ngModel)]="entity.pregnancyStatus">
+                                    <mat-option></mat-option>
+                                    <mat-option value="1">Not Pregnant</mat-option>
+                                    <mat-option value="2">Pregnant</mat-option>
+                                    <mat-option value="3">Breastfeeding</mat-option>
+                                </mat-select>
+                            </mat-form-field>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <mat-form-field class="full-width">
+                                <mat-label>Source of Referral</mat-label>
+                                <mat-select name="sourceReferral" [(ngModel)]="entity.sourceReferral">
+                                    <mat-option></mat-option>
+                                    <mat-option [value]="'PMTCT outreach'">PMTCT outreach</mat-option>
+                                    <mat-option [value]="'Sex worker outreach'">Sex worker outreach</mat-option>
+                                    <mat-option [value]="'Medical outpatient'">Medical outpatient</mat-option>
+                                    <mat-option [value]="'Youth/Adolescent outreach'">Youth/Adolescent outreach
+                                    </mat-option>
+                                    <mat-option [value]="'Private/Commercial Health facility'">Private/Commercial Health
+                                        facility
+                                    </mat-option>
+                                    <mat-option [value]="'Under-fives/Immunization clinic'">Under-fives/Immunization
+                                        clinic
+                                    </mat-option>
+                                    <mat-option [value]="'External HCT centre'">External HCT centre</mat-option>
+                                    <mat-option [value]="'CBO'">CBO</mat-option>
+                                    <mat-option [value]="'In-patients'">In-patients</mat-option>
+                                    <mat-option [value]="'Self-referral'">Self-referral</mat-option>
+                                </mat-select>
+                            </mat-form-field>
+                        </div>
+                        <div class="col-6">
+                            <mat-form-field class="full-width">
+                                <mat-label>Enrollment Setting</mat-label>
+                                <mat-select name="enrollmentSetting" [(ngModel)]="entity.enrollmentSetting"
+                                            required #setting="ngModel">
+                                    <mat-option></mat-option>
+                                    <mat-option [value]="'Facility'">Facility</mat-option>
+                                    <mat-option [value]="'Community'">Community</mat-option>
+                                </mat-select>
+                                <mat-error
+                                        *ngIf="setting.errors && (setting.dirty || setting.touched) && (setting.errors.required)">
+                                    Enrollment Setting is required
+                                </mat-error>
+                            </mat-form-field>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <mat-form-field class="full-width">
+                                <mat-label>HIV Status at Registration</mat-label>
+                                <mat-select name="statusRegistration" [(ngModel)]="entity.statusAtRegistration"
+                                            required #status="ngModel">
+                                    <mat-option></mat-option>
+                                    <mat-option [value]="'HIV_EXPOSED_STATUS_UNKNOWN'">HIV Exposed Status Unknown
+                                    </mat-option>
+                                    <mat-option [value]="'HIV_PLUS_NON_ART'">HIV+ non ART</mat-option>
+                                    <mat-option [value]="'ART_TRANSFER_IN'">ART Transfer In</mat-option>
+                                    <mat-option [value]="'PRE_ART_TRANSFER_IN'">Pre-ART Transfer In</mat-option>
+                                </mat-select>
+                                <mat-error
+                                        *ngIf="status.errors && (status.dirty || status.touched) && (status.errors.required)">
+                                    HIV Status at Registration is required
+                                </mat-error>
+                            </mat-form-field>
+                        </div>
+                        <div class="col-md-6">
+                            <mat-form-field class="full-width">
+                                <mat-label>TB Status</mat-label>
+                                <mat-select name="tbStatus" [(ngModel)]="entity.tbStatus">
+                                    <mat-option></mat-option>
+                                    <mat-option [value]="'No sign or symptoms of TB'">No sign or symptoms of TB
+                                    </mat-option>
+                                    <mat-option [value]="'TB suspected and referred for evaluation'">TB suspected and
+                                        referred for evaluation
+                                    </mat-option>
+                                    <mat-option [value]="'Currently on INH prophylaxis'">Currently on INH prophylaxis
+                                    </mat-option>
+                                    <mat-option [value]="'Currently on TB treatment'">Currently on TB treatment
+                                    </mat-option>
+                                    <mat-option [value]="'TB positive not on TB drugs'">TB positive not on TB drugs
+                                    </mat-option>
+                                </mat-select>
+                            </mat-form-field>
+                        </div>
+                    </div>
+                    <fieldset>
+                        <legend>Next of kin/Treatment Supporter</legend>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <mat-form-field class="full-width">
+                                    <mat-label>Name</mat-label>
+                                    <input matInput name="nextKin" [(ngModel)]="entity.nextKin"/>
+                                </mat-form-field>
+                            </div>
+                            <div class="col-md-6">
+                                <mat-form-field class="full-width">
+                                    <mat-label>Relationship</mat-label>
+                                    <mat-select name="relationKin" [(ngModel)]="entity.relationKin">
+                                        <mat-option></mat-option>
+                                        <mat-option [value]="'Aunt'">Aunt</mat-option>
+                                        <mat-option [value]="'Brother'">Brother</mat-option>
+                                        <mat-option [value]="'Cousin'">Cousin</mat-option>
+                                        <mat-option [value]="'Daughter'">Daughter</mat-option>
+                                        <mat-option [value]="'Father'">Father</mat-option>
+                                        <mat-option [value]="'Friend'">Friend</mat-option>
+                                        <mat-option [value]="'Grand parent'">Grand parent</mat-option>
+                                        <mat-option [value]="'Mother'">Mother</mat-option>
+                                        <mat-option [value]="'Sister'">Sister</mat-option>
+                                        <mat-option [value]="'Son'">Son</mat-option>
+                                        <mat-option [value]="'Spouse'">Spouse</mat-option>
+                                        <mat-option [value]="'Treatment Supporter'">Treatment Supporter</mat-option>
+                                        <mat-option [value]="'Uncle'">Uncle</mat-option>
+                                    </mat-select>
+                                </mat-form-field>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <mat-form-field class="full-width">
+                                    <mat-label>Address</mat-label>
+                                    <input matInput name="addressKin" [(ngModel)]="entity.addressKin"/>
+                                </mat-form-field>
+                            </div>
+                            <div class="col-md-6">
+                                <mat-form-field class="full-width">
+                                    <mat-label>Telephone Number</mat-label>
+                                    <input matInput name="phoneKin" type="number" [(ngModel)]="entity.phoneKin"/>
+                                </mat-form-field>
+                            </div>
+                        </div>
+                    </fieldset>
+                </mat-card-content>
+                <mat-card-actions class="lamis-edit-form-actions">
+                    <button mat-button type="button" (click)="previousState()">Back</button>
+                    <button mat-raised-button color="primary" (click)="save()"
+                            [disabled]="formGroup.invalid || isSaving">{{entity.id ? 'Update' : 'Save'}}
+                    </button>
+                </mat-card-actions>
+            </mat-card>
+        </form>
+    </div>
+</div>

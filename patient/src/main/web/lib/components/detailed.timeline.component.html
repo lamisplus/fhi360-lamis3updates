@@ -1,0 +1,15 @@
+<div class="lamis-edit-form">
+    <div class="lamis-edit-form-container">
+        <mat-card>
+            <mat-card-header>
+                <mat-card-title>Patient Activity History </mat-card-title>
+            </mat-card-header>
+            <mat-card-content>
+                <patient-timeline [patientId]="id" [patientUuid]="uuid" [detailed]="true"></patient-timeline>
+            </mat-card-content>
+            <mat-card-actions class="lamis-edit-form-actions">
+                <button mat-button type="button" (click)="previousState()">Back</button>
+            </mat-card-actions>
+        </mat-card>
+    </div>
+</div>

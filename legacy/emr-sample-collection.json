@@ -1,0 +1,221 @@
+{
+  "type": "object",
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "description": "A Sample request submitted to LIMS",
+  "title": "sampleRequest",
+  "required": [
+    "manifests"
+  ],
+  "properties": {
+    "manifests": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "manifestId",
+          "samples"
+        ],
+        "properties": {
+          "manifestId": {
+            "type": "string",
+            "description": "Manifest ID"
+          },
+          "samples": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "$schema": "http://json-schema.org/draft-04/schema#",
+              "description": "A Sample Information",
+              "title": "sampleInformation",
+              "required": [
+                "artCommencementDate",
+                "dateSampleSent",
+                "facilityID",
+                "firstName",
+                "identifiers",
+                "labID",
+                "sampleCollectionTime",
+                "sampleID",
+                "sampleOrderDate",
+                "sampleType",
+                "sex",
+                "surname",
+                "typeOfTest"
+              ],
+              "oneOf": [
+                {
+                  "required": [
+                    "reasonForEid"
+                  ]
+                },
+                {
+                  "required": [
+                    "reasonForPcr"
+                  ]
+                }
+              ],
+              "if": {
+                "properties": {
+                  "sex": {
+                    "enum": [
+                      "F"
+                    ]
+                  }
+                },
+                "required": [
+                  "sex"
+                ]
+              },
+              "then": {
+                "required": [
+                  "pregnantBreastfeedingStatus"
+                ]
+              },
+              "properties": {
+                "artCommencementDate": {
+                  "type": "string",
+                  "format": "date"
+                },
+                "dateSampleSent": {
+                  "type": "string",
+                  "format": "date"
+                },
+                "dob": {
+                  "type": "string",
+                  "format": "date"
+                },
+                "drugRegimen": {
+                  "type": "string"
+                },
+                "facilityID": {
+                  "type": "string"
+                },
+                "firstName": {
+                  "type": "string"
+                },
+                "identifiers": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "$schema": "http://json-schema.org/draft-04/schema#",
+                    "description": "Patient Identifier",
+                    "required": [
+                      "idCode",
+                      "idNumber"
+                    ],
+                    "properties": {
+                      "idCode": {
+                        "type": "string",
+                        "enum": [
+                          "CLIENTID",
+                          "RECENT",
+                          "HOSPITALNO"
+                        ]
+                      },
+                      "idNumber": {
+                        "type": "string",
+                        "minLength": 2
+                      }
+                    }
+                  },
+                  "minItems": 1
+                },
+                "indicationVLTest": {
+                  "type": "string",
+                  "enum": [
+                    "1",
+                    "2",
+                    "3",
+                    "4",
+                    "5",
+                    "6"
+                  ]
+                },
+                "labID": {
+                  "type": "string"
+                },
+                "pregnantBreastfeedingStatus": {
+                  "type": "string",
+                  "enum": [
+                    "1",
+                    "2"
+                  ]
+                },
+                "reasonForEid": {
+                  "type": "string",
+                  "enum": [
+                    "1",
+                    "2",
+                    "3",
+                    "4"
+                  ]
+                },
+                "reasonForPcr": {
+                  "type": "string",
+                  "enum": [
+                    "1",
+                    "2",
+                    "3",
+                    "4"
+                  ]
+                },
+                "sampleCollectedBy": {
+                  "type": "string"
+                },
+                "sampleCollectionDate": {
+                  "type": "string",
+                  "format": "date"
+                },
+                "sampleCollectionTime": {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                "sampleID": {
+                  "type": "string"
+                },
+                "sampleOrderDate": {
+                  "type": "string",
+                  "format": "date"
+                },
+                "sampleOrderedBy": {
+                  "type": "string"
+                },
+                "sampleType": {
+                  "type": "string",
+                  "enum": [
+                    "WB",
+                    "DBS"
+                  ]
+                },
+                "sex": {
+                  "type": "string",
+                  "enum": [
+                    "M",
+                    "F",
+                    "N",
+                    "U"
+                  ]
+                },
+                "surname": {
+                  "type": "string"
+                },
+                "typeOfTest": {
+                  "type": "string",
+                  "enum": [
+                    "1",
+                    "2"
+                  ]
+                }
+              }
+            },
+            "description": "Test samples",
+            "minItems": 1
+          }
+        }
+      },
+      "description": "Manifest of Lab Test request",
+      "title": "manifest",
+      "minItems": 1
+    }
+  }
+}

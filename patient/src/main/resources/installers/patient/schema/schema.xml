@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+
+    <property name="autoIncrement" value="true"/>
+    <changeSet id="20200716123505-135" author="mattae">
+        <sqlFile path="installers/patient/schema/fiximportmerge.sql" splitStatements="false"/>
+    </changeSet>
+
+    <changeSet id="20200304123505-09" author="mattae">
+        <sql>
+            drop index idx_patient_hospital_num;
+            drop index idx_patient_unique_id;
+            create index idx_patient_hospital_num ON patient (lower(hospital_num));
+            create index idx_patient_unique_id ON patient (lower(unique_id));
+        </sql>
+    </changeSet>
+
+    <changeSet id="20200803123505-01" author="mattae">
+        <createTable tableName="ovc">
+            <column name="id" type="serial" autoIncrement="true">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="household_unique_no" type="varchar(32)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="patient_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="facility_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="referred_to" type="varchar(32)"/>
+            <column name="referred_from" type="varchar(32)"/>
+            <column name="date_referred_to" type="date"/>
+            <column name="date_referred_from" type="date"/>
+            <column name="last_modified" type="timestamp" defaultValueComputed="current_timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="uuid" type="varchar(36)" defaultValueComputed="uuid_generate_v4()::text">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="archived" type="boolean" defaultValue="false"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="20200803123505-02" author="mattae">
+        <addForeignKeyConstraint baseTableName="ovc" baseColumnNames="facility_id"
+                                 constraintName="fk_ovc_facility_id" referencedTableName="facility"
+                                 referencedColumnNames="id"/>
+
+        <addForeignKeyConstraint baseTableName="ovc" baseColumnNames="patient_id"
+                                 constraintName="fk_ovc_patient_id" referencedTableName="patient"
+                                 referencedColumnNames="id"/>
+    </changeSet>
+
+    <changeSet id="20200803123505-03" author="mattae">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <columnExists tableName="status_history" columnName="extra"/>
+            </not>
+        </preConditions>
+        <addColumn tableName="status_history">
+            <column name="extra" type="json-b"/>
+        </addColumn>
+    </changeSet>
+
+</databaseChangeLog>

@@ -1,0 +1,41 @@
+<div class="layout">
+    <div class="list-container">
+        <mat-card>
+            <mat-card-header *ngIf="installed">
+                Updates installed; please restart service or system
+            </mat-card-header>
+            <mat-card-content>
+                <div class="row" *ngIf="modules">
+                    <div class="col-sm-12 col-md-4 col-lg-6"
+                         *ngFor="let module of modules">
+                        <mat-card class="">
+                            <mat-card-header>
+                                <mat-card-title>
+                                    {{module.name}}
+                                </mat-card-title>
+                            </mat-card-header>
+                            <mat-card-content>
+                                <adf-card-view [properties]="getProperties(module)"></adf-card-view>
+                            </mat-card-content>
+                        </mat-card>
+                    </div>
+                </div>
+                <adf-empty-content
+                        *ngIf="!modules.length"
+                        icon="group"
+                        [title]="'No updates available'">
+                </adf-empty-content>
+                <mat-divider></mat-divider>
+                <mat-card-actions style="text-align: right !important;">
+                    <button mat-raised-button type="button" (click)="previousState()">Back</button>
+                    <button mat-raised-button color='primary'
+                            (click)="updateModules()"
+                            [disabled]="!modules.length || isUpdating"
+                            type="submit">
+                        Install Updates
+                    </button>
+                </mat-card-actions>
+            </mat-card-content>
+        </mat-card>
+    </div>
+</div>
